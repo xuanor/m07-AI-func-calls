@@ -191,50 +191,52 @@ class AppData extends ChangeNotifier {
 
     switch (name) {
       case 'draw_circle':
-        if (parameters['x'] != null &&
-            parameters['y'] != null &&
-            parameters['radius'] != null) {
-          final dx = parseDouble(parameters['x']);
-          final dy = parseDouble(parameters['y']);
-          final radius = max(0.0, parseDouble(parameters['radius']));
-          addDrawable(Circle(center: Offset(dx, dy), radius: radius));
-        } else {
-          print("Missing circle properties: $parameters");
-        }
+        addDrawable(Circle(
+          center: Offset(parseDouble(parameters['x']), parseDouble(parameters['y'])),
+          radius: max(0.0, parseDouble(parameters['radius'])),
+          borderColor: parameters['borderColor'],
+          borderWidth: parseDouble(parameters['borderWidth']),
+          fillColor: parameters['fillColor'] is String ? parameters['fillColor'] : '#FFFFFF',
+        ));
         break;
 
       case 'draw_line':
-        if (parameters['startX'] != null &&
-            parameters['startY'] != null &&
-            parameters['endX'] != null &&
-            parameters['endY'] != null) {
-          final startX = parseDouble(parameters['startX']);
-          final startY = parseDouble(parameters['startY']);
-          final endX = parseDouble(parameters['endX']);
-          final endY = parseDouble(parameters['endY']);
-          final start = Offset(startX, startY);
-          final end = Offset(endX, endY);
-          addDrawable(Line(start: start, end: end));
-        } else {
-          print("Missing line properties: $parameters");
-        }
+        addDrawable(Line(
+          start: Offset(parseDouble(parameters['startX']), parseDouble(parameters['startY'])),
+          end: Offset(parseDouble(parameters['endX']), parseDouble(parameters['endY'])) ,
+          color: parameters['color'],
+          thickness: parseDouble(parameters['thickness']),
+        ));
         break;
 
       case 'draw_rectangle':
-        if (parameters['topLeftX'] != null &&
-            parameters['topLeftY'] != null &&
-            parameters['bottomRightX'] != null &&
-            parameters['bottomRightY'] != null) {
-          final topLeftX = parseDouble(parameters['topLeftX']);
-          final topLeftY = parseDouble(parameters['topLeftY']);
-          final bottomRightX = parseDouble(parameters['bottomRightX']);
-          final bottomRightY = parseDouble(parameters['bottomRightY']);
-          final topLeft = Offset(topLeftX, topLeftY);
-          final bottomRight = Offset(bottomRightX, bottomRightY);
-          addDrawable(Rectangle(topLeft: topLeft, bottomRight: bottomRight));
-        } else {
-          print("Missing rectangle properties: $parameters");
+        Map<String, String>? gradientData;
+        if (parameters['fillColor'] is Map<String, dynamic> && parameters['fillColor'].containsKey('startColor') && parameters['fillColor'].containsKey('endColor')) {
+          gradientData = {
+            "startColor": parameters['fillColor']['startColor'],
+            "endColor": parameters['fillColor']['endColor']
+          };
         }
+
+        addDrawable(Rectangle(
+          topLeft: Offset(parseDouble(parameters['topLeftX']), parseDouble(parameters['topLeftY'])),
+          bottomRight: Offset(parseDouble(parameters['bottomRightX']), parseDouble(parameters['bottomRightY'])),
+          borderColor: parameters['borderColor'],
+          borderWidth: parseDouble(parameters['borderWidth']),
+          fillColor: gradientData == null ? parameters['fillColor'] : '#FFFFFF',
+          gradientData: gradientData,
+        ));
+        break;
+
+      case 'draw_text':
+        addDrawable(TextDrawable(
+          position: Offset(parseDouble(parameters['x']), parseDouble(parameters['y'])),
+          text: parameters['text'],
+          fontSize: parseDouble(parameters['fontSize']),
+          fontFamily: parameters['fontFamily'],
+          fontWeight: parameters['fontWeight'],
+          color: parameters['color'],
+        ));
         break;
 
       default:
@@ -242,3 +244,9 @@ class AppData extends ChangeNotifier {
     }
   }
 }
+
+
+
+
+ 
+
